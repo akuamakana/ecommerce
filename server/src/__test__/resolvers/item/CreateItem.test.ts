@@ -59,11 +59,13 @@ describe('CreateItem', () => {
         },
       },
     });
-    expect(data.errors![0].message).toBe('Not authenticated');
+    expect(data.errors![0].message).toBe("Access denied! You don't have permission for this action!");
     expect(data.data?.createItem).toBeNull();
   });
 
-  it.todo('should not update if not authorized');
+  it('should not update if not authorized', async () => {
+    
+  });
 
   it('should fail if no name is provided', async () => {
     const data = await gCall({

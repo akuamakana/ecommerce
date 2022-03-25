@@ -46,6 +46,7 @@ describe('UpdateItem', () => {
           quantity: 1,
         },
       },
+      userId: user?.id,
     });
 
     expect(data.data?.updateItem).toEqual(
@@ -71,6 +72,7 @@ describe('UpdateItem', () => {
           quantity: 1,
         },
       },
+      userId: user?.id,
     });
 
     expect(data).toMatchObject({
@@ -97,6 +99,7 @@ describe('UpdateItem', () => {
           quantity: 1,
         },
       },
+      userId: user?.id,
     });
 
     expect(data).toMatchObject({
@@ -111,5 +114,39 @@ describe('UpdateItem', () => {
     });
   });
 
-  it.todo('should not update if not authorized');
+  it('should not update if not authorized', async () => {
+    await prisma.user.update({
+      where: {
+        email: user?.email,
+      },
+      data: {
+        role: 'USER',
+      },
+    });
+    
+    const data = await gCall({
+      source: updateItemMutation,
+      variableValues: {
+        updateItemId: item.id,
+        data: {
+          name: 'Playstation',
+          description: 'Hot new gaming console!',
+          price: 499.99,
+          quantity: 1,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data).toMatchObject({
+      data: {
+        updateItem: null,
+      },
+      errors: [
+        {
+          message: "Access denied! You don't have permission for this action!",
+        },
+      ],
+    });
+  });
 });

@@ -1,6 +1,7 @@
 import gCall from '@test_utils/gCall';
 import prisma from '@utils/prisma';
 import { testUser } from '@test_utils/testUser';
+import { User } from '@models/User';
 
 const deleteItemMutation = `
 mutation DeleteItem($deleteItemId: String!) {
@@ -9,16 +10,38 @@ mutation DeleteItem($deleteItemId: String!) {
 `;
 
 describe('DeleteItem', () => {
+  let user: User | null;
+  beforeAll(async () => {
+    user = await testUser();
+  });
   it('should delete an item', async () => {
-    const user = await testUser();
-    if (!user) return;
-
     const item = await prisma.item.create({
       data: {
         name: 'Xbox',
         description: 'Hot new gaming console!',
         price: 499.99,
-        userId: user.id,
+        userId: user!.id,
+      },
+    });
+
+    const data = await gCall({
+      source: deleteItemMutation,
+      variableValues: {
+        deleteItemId: item.id,
+      },
+      userId: user!.id,
+    });
+
+    expect(data.data?.deleteItem).toBe(true);
+  });
+
+  it('should not delete if not authorized', async () => {
+    const item = await prisma.item.create({
+      data: {
+        name: 'Xbox',
+        description: 'Hot new gaming console!',
+        price: 499.99,
+        userId: user!.id,
       },
     });
 
@@ -29,8 +52,6 @@ describe('DeleteItem', () => {
       },
     });
 
-    expect(data.data?.deleteItem).toBe(true);
+    expect(data.errors![0].message).toBe("Access denied! You don't have permission for this action!");
   });
-
-  it.todo('should not delete if not authorized');
 });
