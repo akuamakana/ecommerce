@@ -1,4 +1,5 @@
 import gCall from '@test_utils/gCall';
+import random from '@test_utils/random';
 
 jest.mock('@utils/sendEmail', () => ({
   sendEmail: jest.fn(() => true),
@@ -19,11 +20,11 @@ describe('Register', () => {
 
   const userData = {
     input: {
-      email: 'jest@jest.com',
-      username: 'jest',
-      password: 'jest',
-      firstName: 'jest',
-      lastName: 'jest',
+      email: `${random()}@jest.com`,
+      username: random(),
+      password: random(),
+      firstName: random(),
+      lastName: random(),
     },
   };
 
@@ -37,11 +38,11 @@ describe('Register', () => {
       expect.objectContaining({
         data: {
           register: {
-            email: 'jest@jest.com',
-            firstName: 'jest',
-            lastName: 'jest',
-            username: 'jest',
-            id: expect.stringContaining('-'),
+            email: userData.input.email,
+            firstName: userData.input.firstName,
+            lastName: userData.input.lastName,
+            username: userData.input.username,
+            id: expect.any(String),
           },
         },
       })
@@ -49,19 +50,24 @@ describe('Register', () => {
   });
 
   it('fails to create with duplicate email', async () => {
-    const { errors } = await gCall({
+    const data = await gCall({
       source: registerMutation,
       variableValues: {
         input: {
-          email: 'jest@jest.com',
-          username: 'jester',
-          password: 'jest',
-          firstName: 'jester',
-          lastName: 'jest',
+          ...userData.input,
+          username: random(),
         },
       },
     });
-    expect(errors![0].message).toBe('Argument Validation Error');
+
+    expect(data).toMatchObject({
+      data: null,
+      errors: [
+        {
+          message: 'Argument Validation Error',
+        },
+      ],
+    });
   });
 
   it('fails to create with duplicate username', async () => {
@@ -69,14 +75,12 @@ describe('Register', () => {
       source: registerMutation,
       variableValues: {
         input: {
-          email: 'jester@jest.com',
-          username: 'jest',
-          password: 'jest',
-          firstName: 'jester',
-          lastName: 'jest',
+          ...userData.input,
+          email: `${random()}@jest.com`,
         },
       },
     });
+
     expect(errors![0].message).toBe('Argument Validation Error');
   });
 });
