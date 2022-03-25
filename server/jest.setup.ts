@@ -18,7 +18,7 @@ const main = async () => {
       email: userData.input.email,
     },
     update: {
-      // verified: true,
+      password: await argon2.hash(userData.input.password),
     },
     create: {
       ...userData.input,
@@ -27,4 +27,4 @@ const main = async () => {
   });
 };
 
-main().catch();
+main().catch((e) => console.error(e));

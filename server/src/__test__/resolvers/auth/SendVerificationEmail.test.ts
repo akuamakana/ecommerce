@@ -1,4 +1,5 @@
 import gCall from '@test_utils/gCall';
+import prisma from '@utils/prisma';
 
 jest.mock('@utils/sendEmail', () => ({
   sendEmail: jest.fn(() => true),
@@ -12,10 +13,24 @@ mutation SendVerification($email: String!) {
 
 describe('SendVerificationEmail', () => {
   it('should send email to user', async () => {
+    const user = await prisma.user.upsert({
+      where: {
+        email: 'email@email.com',
+      },
+      update: {},
+      create: {
+        email: 'email@email.com',
+        username: 'username',
+        password: 'password',
+        firstName: 'firstName',
+        lastName: 'lastName',
+      },
+    });
+
     const data = await gCall({
       source: sendVerificationMutation,
       variableValues: {
-        email: 'tester@test.com',
+        email: user.email,
       },
     });
 
