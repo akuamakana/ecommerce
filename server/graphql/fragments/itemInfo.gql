@@ -1,0 +1,7 @@
+fragment itemInfo on Item {
+  id
+  name
+  description
+  price
+  imageUrl
+}
