@@ -1,6 +1,7 @@
 import argon2 from 'argon2';
 import gCall from '@test_utils/gCall';
 import prisma from '@utils/prisma';
+import random from '@test_utils/random';
 
 const loginMutation = `
 mutation Login($password: String!, $usernameOrEmail: String!) {
@@ -67,11 +68,12 @@ describe('Login', () => {
   });
 
   it('fails to login with an unverified account', async () => {
+    const randomEmail = `${random()}@test.com`;
     const hashedPassword = await argon2.hash('hasjlkczlj1');
     await prisma.user.create({
       data: {
-        email: 'tester@test.com',
-        username: 'test',
+        email: randomEmail,
+        username: random(),
         firstName: 'test',
         lastName: 'test',
         password: hashedPassword,
@@ -81,7 +83,7 @@ describe('Login', () => {
     const data = await gCall({
       source: loginMutation,
       variableValues: {
-        usernameOrEmail: 'test',
+        usernameOrEmail: randomEmail,
         password: 'hasjlkczlj1',
       },
     });
