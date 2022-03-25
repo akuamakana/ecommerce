@@ -19,6 +19,7 @@ const main = async () => {
     },
     update: {
       password: await argon2.hash(userData.input.password),
+      role: 'ADMIN',
     },
     create: {
       ...userData.input,

@@ -12,6 +12,8 @@ import GetItemsResolver from '@resolvers/item/GetItems';
 import GetItemResolver from '@resolvers/item/GetItem';
 import UpdateItemResolver from '@resolvers/item/UpdateItem';
 import DeleteItemResolver from '@resolvers/item/DeleteItem';
+import customAuthChecker from '@middleware/customAuthChecker';
+import TestResolver from '@test_utils/TestResolver';
 
 const createSchema = () =>
   buildSchema({
@@ -29,7 +31,9 @@ const createSchema = () =>
       GetItemResolver,
       UpdateItemResolver,
       DeleteItemResolver,
+      TestResolver
     ],
+    authChecker: customAuthChecker,
   });
 
 export default createSchema;

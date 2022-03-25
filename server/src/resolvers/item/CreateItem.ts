@@ -1,13 +1,12 @@
-import { MyContext } from './../../types/MyContext';
-import { Item } from '@models/Item';
-import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from 'type-graphql';
-import prisma from '@utils/prisma';
 import { CreateItemInput } from '@models/Inputs/CreateItemInput';
-import { isAuth } from '@middleware/isAuth';
+import { Item } from '@models/Item';
+import prisma from '@utils/prisma';
+import { Arg, Authorized, Ctx, Mutation, Resolver } from 'type-graphql';
+import { MyContext } from './../../types/MyContext';
 
 @Resolver()
 class CreateItemResolver {
-  @UseMiddleware(isAuth)
+  @Authorized(['ADMIN', 'MANAGER'])
   @Mutation(() => Item, { nullable: true })
   async createItem(@Ctx() ctx: MyContext, @Arg('data') data: CreateItemInput): Promise<Item> {
     const item = await prisma.item.create({

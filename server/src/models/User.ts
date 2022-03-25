@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, ID, Authorized } from 'type-graphql';
 
 @ObjectType()
 export class User {
@@ -17,7 +17,14 @@ export class User {
   @Field()
   lastName: string;
 
+  @Authorized(['ADMIN', 'MANAGER'])
+  @Field()
   verified: boolean;
+
+  @Authorized(['ADMIN', 'MANAGER'])
+  @Field()
+  role: string;
+
   createdAt: Date;
   updatedAt: Date;
 }

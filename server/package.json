@@ -9,7 +9,7 @@
     "db:clear": "dotenv -e .env.test -- prisma migrate reset --force",
     "db:migrate": "dotenv -e .env.development prisma migrate dev",
     "test": "yarn db:clear && yarn jest",
-    "jest": "dotenv -e .env.test -- jest --runInBand",
+    "jest": "dotenv -e .env.test -- jest",
     "dev": "dotenv -e .env.development -- ts-node-dev --respawn -r tsconfig-paths/register src/index.ts",
     "generate": "graphql-codegen --config codegen.yml"
   },

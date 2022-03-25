@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from 'type-graphql';
+import { Authorized, Field, ID, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export class Item {
@@ -20,6 +20,8 @@ export class Item {
   @Field()
   quantity: number;
 
+  @Authorized(['ADMIN', 'MANAGER'])
+  @Field()
   userId: string;
 
   createdAt: Date;
