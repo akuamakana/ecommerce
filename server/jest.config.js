@@ -11,6 +11,7 @@ module.exports = {
     '^@types/(.*)$': '<rootDir>/src/types/$1',
     '^@middleware/(.*)$': '<rootDir>/src/middleware/$1',
     '^@validators/(.*)$': '<rootDir>/src/validators/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
     '^@test_utils/(.*)$': '<rootDir>/src/__test__/__utils__/$1',
   },
   collectCoverage: true,

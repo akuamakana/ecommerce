@@ -1,23 +1,16 @@
 import Cart from '@models/Cart';
 import { MyContext } from 'types/MyContext';
-import { Ctx, Query, Resolver } from 'type-graphql';
-import prisma from '@utils/prisma';
+import { Authorized, Ctx, Query, Resolver } from 'type-graphql';
+import { UserCart } from '@lib/UserCart';
 
 @Resolver()
 class GetCartResolver {
+  @Authorized(['USER', 'ADMIN', 'MANAGER'])
   @Query(() => Cart, { nullable: true })
   async getCart(@Ctx() { req }: MyContext): Promise<Cart | null> {
-    const cart = await prisma.cart.findUnique({
-      where: { userId: req.session.userId },
-      include: {
-        items: {
-          include: { item: true },
-        },
-        user: true,
-      },
-    });
+    const cart = new UserCart(req.session.userId);
 
-    return cart;
+    return await cart.getCart();
   }
 }
 

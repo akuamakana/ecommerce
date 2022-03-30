@@ -44,7 +44,7 @@ describe('UpdateCart', () => {
     });
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await prisma.user.update({
       where: {
         id: user.id,
@@ -72,7 +72,6 @@ describe('UpdateCart', () => {
       },
       userId: user?.id,
     });
-    console.log('🚀 ~ file: UpdateCart.test.ts ~ line 75 ~ it ~ data', JSON.stringify(data, null, 2));
 
     expect(data.data?.updateCart).toMatchObject(
       expect.objectContaining({
@@ -94,11 +93,183 @@ describe('UpdateCart', () => {
       })
     );
   });
-  it.todo('should add an item to cart with quantity 2');
-  it.todo('should remove an item from cart');
-  it.todo('should update an item quantity in cart');
-  it.todo('should return cart if updated item is not in cart');
-  it.todo('should return cart if item does not exist');
-  it.todo('should fail if add to cart quantity > item quantity');
-  it.todo('should fail if not logged in');
+
+  it('should update an item quantity in cart', async () => {
+    const data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: item.id,
+          quantity: 2,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data.data?.updateCart).toMatchObject(
+      expect.objectContaining({
+        items: [
+          {
+            id: expect.any(String),
+            quantity: 2,
+            itemId: item.id,
+            item: {
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              price: item.price,
+              imageUrl: item.imageUrl,
+              quantity: item.quantity,
+            },
+          },
+        ],
+      })
+    );
+  });
+
+  it('should return error message if item does not exist in inventory/cart', async () => {
+    const data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: 'not in cart',
+          quantity: 2,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data).toMatchObject({
+      data: {
+        updateCart: null,
+      },
+      errors: [
+        {
+          message: 'Not enough items in stock',
+        },
+      ],
+    });
+  });
+
+  it('should remove an item from cart', async () => {
+    let data: any;
+    data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: item.id,
+          quantity: 1,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data.data?.updateCart).toMatchObject(
+      expect.objectContaining({
+        items: [
+          {
+            id: expect.any(String),
+            quantity: 1,
+            itemId: item.id,
+            item: {
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              price: item.price,
+              imageUrl: item.imageUrl,
+              quantity: item.quantity,
+            },
+          },
+        ],
+      })
+    );
+
+    data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: item.id,
+          quantity: 0,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data.data?.updateCart).toMatchObject(
+      expect.objectContaining({
+        items: [],
+      })
+    );
+  });
+
+  it('should return error message if item does not exist', async () => {
+    const data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: 'not in database',
+          quantity: 2,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data).toMatchObject({
+      data: {
+        updateCart: null,
+      },
+      errors: [
+        {
+          message: 'Not enough items in stock',
+        },
+      ],
+    });
+  });
+
+  it('should return error message if add to cart quantity > item quantity', async () => {
+    const data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: item.id,
+          quantity: item.quantity + 1,
+        },
+      },
+      userId: user?.id,
+    });
+
+    expect(data).toMatchObject({
+      data: {
+        updateCart: null,
+      },
+      errors: [
+        {
+          message: 'Not enough items in stock',
+        },
+      ],
+    });
+  });
+
+  it('should fail if not logged in', async () => {
+    const data = await gCall({
+      source: updateCartMutation,
+      variableValues: {
+        data: {
+          itemId: item.id,
+          quantity: 1,
+        },
+      },
+    });
+
+    expect(data).toMatchObject({
+      data: {
+        updateCart: null,
+      },
+      errors: [
+        {
+          message: "Access denied! You don't have permission for this action!",
+        },
+      ],
+    });
+  });
 });
