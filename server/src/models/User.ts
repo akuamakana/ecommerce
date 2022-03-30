@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID, Authorized } from 'type-graphql';
+import Cart from './Cart';
 
 @ObjectType()
 export class User {
@@ -24,6 +25,9 @@ export class User {
   @Authorized(['ADMIN', 'MANAGER'])
   @Field()
   role: string;
+
+  // @Field(() => Cart, { nullable: true })
+  cart?: Cart;
 
   createdAt: Date;
   updatedAt: Date;
