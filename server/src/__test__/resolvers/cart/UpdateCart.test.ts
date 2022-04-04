@@ -1,6 +1,8 @@
 import gCall from '@test_utils/gCall';
 import prisma from '@utils/prisma';
 import { testUser } from '@test_utils/testUser';
+import { User } from '@models/User';
+import { Item } from '@models/Item';
 
 const updateCartMutation = `
 mutation UpdateCart($data: CartItemInput!) {
@@ -22,12 +24,31 @@ mutation UpdateCart($data: CartItemInput!) {
 }
 `;
 
+const resetCart = async (user: User) => {
+  await prisma.user.update({
+    where: {
+      id: user!.id,
+    },
+    data: {
+      cart: {
+        update: {
+          items: {
+            set: [],
+          },
+        },
+      },
+    },
+  });
+};
+
 describe('UpdateCart', () => {
-  let item: any;
-  let user: any;
+  let user: User | null;
+  let item: Item | null;
 
   beforeAll(async () => {
     user = await testUser();
+    await resetCart(user!);
+
     item = await prisma.item.create({
       data: {
         name: 'test item',
@@ -45,20 +66,7 @@ describe('UpdateCart', () => {
   });
 
   afterAll(async () => {
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        cart: {
-          update: {
-            items: {
-              set: [],
-            },
-          },
-        },
-      },
-    });
+    await resetCart(user!);
   });
 
   it('should add an item to cart with quantity 1', async () => {
@@ -66,7 +74,7 @@ describe('UpdateCart', () => {
       source: updateCartMutation,
       variableValues: {
         data: {
-          itemId: item.id,
+          itemId: item!.id,
           quantity: 1,
         },
       },
@@ -79,14 +87,14 @@ describe('UpdateCart', () => {
           {
             id: expect.any(String),
             quantity: 1,
-            itemId: item.id,
+            itemId: item!.id,
             item: {
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              price: item.price,
-              imageUrl: item.imageUrl,
-              quantity: item.quantity,
+              id: item!.id,
+              name: item!.name,
+              description: item!.description,
+              price: item!.price,
+              imageUrl: item!.imageUrl,
+              quantity: item!.quantity,
             },
           },
         ],
@@ -99,7 +107,7 @@ describe('UpdateCart', () => {
       source: updateCartMutation,
       variableValues: {
         data: {
-          itemId: item.id,
+          itemId: item!.id,
           quantity: 2,
         },
       },
@@ -112,14 +120,14 @@ describe('UpdateCart', () => {
           {
             id: expect.any(String),
             quantity: 2,
-            itemId: item.id,
+            itemId: item!.id,
             item: {
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              price: item.price,
-              imageUrl: item.imageUrl,
-              quantity: item.quantity,
+              id: item!.id,
+              name: item!.name,
+              description: item!.description,
+              price: item!.price,
+              imageUrl: item!.imageUrl,
+              quantity: item!.quantity,
             },
           },
         ],
@@ -157,7 +165,7 @@ describe('UpdateCart', () => {
       source: updateCartMutation,
       variableValues: {
         data: {
-          itemId: item.id,
+          itemId: item!.id,
           quantity: 1,
         },
       },
@@ -170,14 +178,14 @@ describe('UpdateCart', () => {
           {
             id: expect.any(String),
             quantity: 1,
-            itemId: item.id,
+            itemId: item!.id,
             item: {
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              price: item.price,
-              imageUrl: item.imageUrl,
-              quantity: item.quantity,
+              id: item!.id,
+              name: item!.name,
+              description: item!.description,
+              price: item!.price,
+              imageUrl: item!.imageUrl,
+              quantity: item!.quantity,
             },
           },
         ],
@@ -188,7 +196,7 @@ describe('UpdateCart', () => {
       source: updateCartMutation,
       variableValues: {
         data: {
-          itemId: item.id,
+          itemId: item!.id,
           quantity: 0,
         },
       },
@@ -231,8 +239,8 @@ describe('UpdateCart', () => {
       source: updateCartMutation,
       variableValues: {
         data: {
-          itemId: item.id,
-          quantity: item.quantity + 1,
+          itemId: item!.id,
+          quantity: item!.quantity + 1,
         },
       },
       userId: user?.id,
@@ -255,7 +263,7 @@ describe('UpdateCart', () => {
       source: updateCartMutation,
       variableValues: {
         data: {
-          itemId: item.id,
+          itemId: item!.id,
           quantity: 1,
         },
       },
