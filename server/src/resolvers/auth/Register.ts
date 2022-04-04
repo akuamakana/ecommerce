@@ -18,7 +18,9 @@ class RegisterResolver {
       password: hashedPassword,
     };
 
-    const createdUser = await prisma.user.create({ data: user });
+    const createdUser = await prisma.user.create({
+      data: user
+    });
 
     await sendVerificationEmail(createdUser);
 

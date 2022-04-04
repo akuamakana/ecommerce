@@ -1,0 +1,18 @@
+mutation UpdateCart($data: CartItemInput!) {
+  updateCart(data: $data) {
+    id
+    items {
+      id
+      quantity
+      itemId
+      item {
+        id
+        name
+        description
+        price
+        imageUrl
+        quantity
+      }
+    }
+  }
+}

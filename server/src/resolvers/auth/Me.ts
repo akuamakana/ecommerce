@@ -11,7 +11,9 @@ class MeResolver {
       return null;
     }
 
-    return prisma.user.findUnique({ where: { id: ctx.req.session.userId } });
+    const me = await prisma.user.findUnique({ where: { id: ctx.req.session.userId } });
+
+    return me;
   }
 }
 
