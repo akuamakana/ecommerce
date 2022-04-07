@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import prisma from '@utils/prisma';
 import random from './random';
 import argon2 from 'argon2';

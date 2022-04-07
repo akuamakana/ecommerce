@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import createSchema from '../../utils/createSchema';
 import { graphql } from 'graphql';
 import { Maybe } from 'graphql/jsutils/Maybe';
