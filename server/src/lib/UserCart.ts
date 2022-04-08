@@ -33,7 +33,7 @@ export class UserCart {
     });
 
     if (!item || item.quantity < quantity) {
-      throw new Error('Not enough items in stock');
+      throw new Error(`Item ${itemId} is out of stock`);
     }
 
     return true;

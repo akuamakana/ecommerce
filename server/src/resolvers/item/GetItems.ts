@@ -6,7 +6,16 @@ import { Query, Resolver } from 'type-graphql';
 export class GetItemsResolver {
   @Query(() => [Item])
   async getItems(): Promise<Item[]> {
-    const items = await prisma.item.findMany();
+    const items = await prisma.item.findMany({
+      where: {
+        quantity: {
+          gt: 0,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
     return items;
   }

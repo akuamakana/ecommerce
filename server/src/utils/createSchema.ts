@@ -16,6 +16,7 @@ import customAuthChecker from '@middleware/customAuthChecker';
 import TestResolver from '@test_utils/TestResolver';
 import UpdateCartResolver from '@resolvers/cartItem/UpdateCart';
 import GetCartResolver from '@resolvers/cartItem/GetCart';
+import CheckoutResolver from '@resolvers/checkout/Checkout';
 
 const createSchema = () =>
   buildSchema({
@@ -35,6 +36,7 @@ const createSchema = () =>
       DeleteItemResolver,
       UpdateCartResolver,
       GetCartResolver,
+      CheckoutResolver,
       TestResolver,
     ],
     authChecker: customAuthChecker,
